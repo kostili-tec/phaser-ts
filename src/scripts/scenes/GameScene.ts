@@ -1,24 +1,28 @@
 import { Scene } from "phaser";
-import { Card } from '../Card'; 
+import { Card } from '../Card';
+import { CardDealer } from '../CardDealer';
 
 export class GameScene extends Scene {
+  cardDealer!: CardDealer;
+  onCardClick = (_: unknown, card: Card) => {
+    this.cardDealer.openCard(card);
+  }
+  handleAllCardsOpen = () => {
+    this.scene.restart();
+  }
   constructor() {
     super('GameScene')
   }
 
-  onCardClick(_: unknown, object: Card) {
-    if (object instanceof Card) {
-      object.open()
-    }
+  create() {
+   this.cardDealer = new CardDealer(this);
+   this.cardDealer.createCards();
+   this.initEvents();
   }
 
-  create() {
-    const card = new Card(this, {
-      x: 250, 
-      y: 500,
-      id: '2'
-  });
-    // card.setOrigin(0)
+  initEvents() {
+    this.cardDealer.onAllCardsOpen = this.handleAllCardsOpen
     this.input.on('gameobjectdown', this.onCardClick);
+
   }
 }

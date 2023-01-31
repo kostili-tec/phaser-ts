@@ -1,10 +1,10 @@
 import { GameObjects, Scene } from "phaser";
 
-type CardId = '1' | '2' | '3' | '4' | '5'
 export type CardPosition = { x: number, y: number }
-type CardProps = CardPosition & { id: CardId}
+type CardId = '1' | '2' | '3' | '4' | '5'
+type CardProps = CardPosition & { id: CardId }
 export class Card extends GameObjects.Sprite {
-  readonly id: string
+  readonly id: CardId
   private _isOpen = false;
   constructor(scene: Scene, props: CardProps) {
     const { x, y, id } = props;
@@ -28,6 +28,7 @@ export class Card extends GameObjects.Sprite {
 
   close() {
     this._isOpen = false;
+    this.setTexture('card');
   }
 
 }
