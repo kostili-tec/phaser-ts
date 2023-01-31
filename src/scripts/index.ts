@@ -1,32 +1,18 @@
-import 'phaser';
-
+import { Game, Types, AUTO } from 'phaser';
 import test from '../assets/test.jpg';
+import card from '../assets/card/card1.png';
+import { PreloadScene } from '../scripts/scenes/PreloadScene';
+import { GameScene } from '../scripts/scenes/GameScene';
 
-class PlayGame extends Phaser.Scene {
-  image!: Phaser.GameObjects.Image;
-  constructor() {
-      super("PlayGame");
-  }
-  preload(): void {
-      this.load.image('logo', test);
-  }
-  create(): void {
-      this.image = this.add.image(400, 300, 'logo');
-  }
-  update(): void {
-      this.image.rotation += 0.01;   
-  }
+const config: Types.Core.GameConfig = {
+    type: AUTO,
+    width: 1280,
+    height: 980,
+    backgroundColor: '#6e6666',
+    scene: [
+        PreloadScene,
+        GameScene
+    ]
 }
 
-let configObject: Phaser.Types.Core.GameConfig = {
-  scale: {
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
-      parent: 'thegame',
-      width: 800,
-      height: 600
-  },
-  scene: PlayGame
-};
-
-new Phaser.Game(configObject);
+new Game(config);
