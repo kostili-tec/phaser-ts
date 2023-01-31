@@ -6,13 +6,18 @@ export class GameScene extends Scene {
     super('GameScene')
   }
 
-  onCardClick(_: unknown, object: unknown) {
-    console.log('click');
-    console.log(object);
+  onCardClick(_: unknown, object: Card) {
+    if (object instanceof Card) {
+      object.open()
+    }
   }
 
   create() {
-    const card = new Card(this, 250, 500);
+    const card = new Card(this, {
+      x: 250, 
+      y: 500,
+      id: '2'
+  });
     // card.setOrigin(0)
     this.input.on('gameobjectdown', this.onCardClick);
   }
