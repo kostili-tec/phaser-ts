@@ -13,12 +13,12 @@ export class CardDealer {
     this._scene = scene;
   }
 
-  openCard(card: Card) {
+  async openCard(card: Card) {
 
     if (card.isOpen)
     return
 
-    card.open();
+    await card.open();
 
     if (!this.prevOpenCard) {
       this.prevOpenCard = card;
@@ -28,23 +28,30 @@ export class CardDealer {
     if (this.prevOpenCard.id === card.id) {
       this.guessedPairs += 1;
     } else {
-      this.prevOpenCard.close();
-      card.close();
+     await Promise.all([
+        this.prevOpenCard.close(),
+         card.close()
+      ])
     }
+
     this.prevOpenCard = null;
 
     if (this.guessedPairs === this.possibleCardIds.length) {
       this.onAllCardsOpen()
     }
   }
-  createCards() {   
+  async createCards() {   
     const allCardsPosition = Utils.Array.Shuffle([...this.possibleCardIds, ...this.possibleCardIds]);
     const cardPosition = this.getCardsPositions();
 
-    allCardsPosition.forEach((cardId, ind) => {
-      const { x, y } = cardPosition[ind];
-      const card = new Card(this._scene, { x, y, id: cardId  });
-    })
+    let i = 0;
+    for (const cardId of allCardsPosition) {
+      const { x, y } = cardPosition[i];
+      const card = new Card(this._scene, { x: -200, y: -200, id: cardId  });
+      await card.move(x, y);
+      i++;
+    }
+    i = NaN;
   }
 
   private getCardsPositions() {

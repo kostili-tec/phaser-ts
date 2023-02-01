@@ -1,28 +1,52 @@
 import { Scene } from "phaser";
 import { Card } from '../Card';
 import { CardDealer } from '../CardDealer';
+import { MemoDOM } from '../MemoDOM';
 
+type SceneCreateProps = {
+  isRestart?: boolean
+}
 export class GameScene extends Scene {
-  cardDealer!: CardDealer;
-  onCardClick = (_: unknown, card: Card) => {
-    this.cardDealer.openCard(card);
+  private _cardDealer!: CardDealer;
+  private _menuDOM!: MemoDOM;
+
+    
+  onStartGame = async () => {
+    await this._cardDealer.createCards()
+    this.input.on('gameobjectdown', this.onCardClick);
   }
+
+  onRestarGame = () => {
+    this.scene.restart({ isRestart: true} );
+  }
+
+  onCardClick = (_: unknown, card: Card) => {
+    this._cardDealer.openCard(card);
+  }
+
   handleAllCardsOpen = () => {
-    this.scene.restart();
+    this._menuDOM.render( {type: 'end', isWin: true });
+    // this.scene.restart();
   }
   constructor() {
     super('GameScene')
   }
 
-  create() {
-   this.cardDealer = new CardDealer(this);
-   this.cardDealer.createCards();
+  async create({ isRestart }: SceneCreateProps) {
+   this._cardDealer = new CardDealer(this);
+   this._menuDOM = new MemoDOM();
+
+   isRestart 
+    ? this.onStartGame()
+    : this._menuDOM.render({ type: 'start' });
+  //  this._menuDOM.render({ type: 'start' })
    this.initEvents();
   }
 
   initEvents() {
-    this.cardDealer.onAllCardsOpen = this.handleAllCardsOpen
-    this.input.on('gameobjectdown', this.onCardClick);
+    this._menuDOM.onStartGame = this.onStartGame;
+    this._menuDOM.onRestarGame = this.onRestarGame;
+    this._cardDealer.onAllCardsOpen = this.handleAllCardsOpen
 
   }
 }
